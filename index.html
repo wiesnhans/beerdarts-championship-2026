@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beerdartsliga – Ergebnisse</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f4; padding:20px }
+    h1, h2 { text-align:center }
+    .day, .ko { background:#fff; padding:15px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,.1) }
+    table { width:100%; border-collapse:collapse; margin-top:10px }
+    th, td { border:1px solid #ccc; padding:8px; text-align:center }
+    th { background:#eee }
+    input { width:50px; text-align:center }
+  </style>
+</head>
+<body>
+
+<h1>🎯 Beerdartsliga</h1>
+
+<h2>Vorrunde – 8 Spieltage</h2>
+
+<div id="vorrunde"></div>
+
+<h2>K.-o.-Runde</h2>
+
+<div class="ko">
+  <h3>Halbfinale</h3>
+  <table>
+    <tr><th>Spiel</th><th>Spieler A</th><th>Punkte</th><th>Spieler B</th><th>Punkte</th></tr>
+    <tr>
+      <td>HF 1</td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+    </tr>
+    <tr>
+      <td>HF 2</td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+    </tr>
+  </table>
+
+  <h3>Spiel um Platz 3</h3>
+  <table>
+    <tr><th>Spieler A</th><th>Punkte</th><th>Spieler B</th><th>Punkte</th></tr>
+    <tr>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+    </tr>
+  </table>
+
+  <h3>Finale</h3>
+  <table>
+    <tr><th>Spieler A</th><th>Punkte</th><th>Spieler B</th><th>Punkte</th></tr>
+    <tr>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+      <td><input placeholder="Name"></td>
+      <td><input type="number"></td>
+    </tr>
+  </table>
+</div>
+
+<script>
+const spieler = ['Spieler 1', 'Spieler 2', 'Spieler 3', 'Spieler 4'];
+const container = document.getElementById('vorrunde');
+
+for (let tag = 1; tag <= 8; tag++) {
+  const div = document.createElement('div');
+  div.className = 'day';
+  div.innerHTML = `
+    <h3>Spieltag ${tag}</h3>
+    <table>
+      <tr><th>Spieler</th><th>Punkte</th></tr>
+      ${spieler.map(s => `<tr><td>${s}</td><td><input type="number"></td></tr>`).join('')}
+    </table>`;
+  container.appendChild(div);
+}
+</script>
+
+</body>
+</html>
