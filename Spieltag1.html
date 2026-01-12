@@ -187,7 +187,7 @@ vLines.slice(1).forEach(cols=>{
   });
 
  // Finalrunde
-const finals = fLines.slice(1).map(l => l.split(";"));
+const finals = fLines.slice(1).map(l => l.split(","));
 finals.forEach((cols, idx) => {
   addStats(cols);
 
@@ -251,3 +251,4 @@ ladeSpiele();
 
 </body>
 </html>
+
