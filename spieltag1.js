@@ -1,0 +1,151 @@
+const vorrundeUrl = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/vorrundespieltag1.csv";
+const finalUrl   = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/finalsspieltag1.csv";
+
+async function ladeSpiele() {
+  const [vText, fText] = await Promise.all([fetch(vorrundeUrl), fetch(finalUrl)].map(r=>r.then(res=>res.text())));
+
+  const vLines = vText.split("\n").filter(l=>l.trim()!=="");
+  const fLines = fText.split("\n").filter(l=>l.trim()!=="");
+
+  const vorrundeTable = document.getElementById("vorrundeSpiele");
+  const statTable     = document.getElementById("spielerTabelle");
+  const finalBracket  = document.getElementById("finalBracket");
+  const final2        = document.getElementById("final2");
+  const endTable      = document.getElementById("spieltag1Tabelle");
+
+  const stats = {};
+
+ function addStats(cols) {
+  const s1 = cols[2], s2 = cols[3];
+  const legs1 = parseInt(cols[4]), legs2 = parseInt(cols[5]);
+  const avg1 = parseFloat(cols[6].replace(",", ".")), avg2 = parseFloat(cols[7].replace(",", "."));
+  const dbl1 = parseInt(cols[10]), dbl2 = parseInt(cols[11]); // Versuche
+  const hs1  = parseInt(cols[12]), hs2  = parseInt(cols[13]);
+  const co1  = parseInt(cols[14]), co2  = parseInt(cols[15]);
+
+  [[s1,legs1,legs2,avg1,dbl1,co1,hs1],[s2,legs2,legs1,avg2,dbl2,co2,hs2]].forEach(([name,lp,lm,av,dbl,co,hs])=>{
+    if(!stats[name]) stats[name]={spiele:0,siege:0,niederlagen:0,legsPlus:0,legsMinus:0,punkte:0,avgSum:0,doppelSum:0,doppelTrefferSum:0,checkoutMax:0,highscoreMax:0};
+    const d = stats[name];
+    d.spiele++;
+    d.legsPlus += lp;
+    d.legsMinus += lm;
+    d.avgSum += av;
+    d.doppelSum += dbl; // Versuche
+    d.doppelTrefferSum += lp; // erfolgreiche Doppel = Legs gewonnen? (oder musst du genaue Treffer haben)
+    d.checkoutMax = Math.max(d.checkoutMax, co);
+    d.highscoreMax = Math.max(d.highscoreMax, hs);
+    if(lp>lm){d.siege++;d.punkte+=2;} else if(lp<lm){d.niederlagen++;} else {d.punkte++;}
+  });
+}
+
+
+  // Vorrunde anzeigen
+// Vorrunde anzeigen
+vLines.slice(1).forEach(cols=>{
+  cols = cols.split(",");
+
+  // Stats aktualisieren
+  addStats(cols);
+
+  const s1 = cols[2], s2 = cols[3];
+  const legs1 = cols[4], legs2 = cols[5];
+  const avg1 = parseFloat(cols[6]).toFixed(2); // replace(",", ".") nicht mehr nötig
+  const avg2 = parseFloat(cols[7]).toFixed(2);
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${s1} <small>${avg1}</small></td>
+                  <td>${legs1}</td><td>:</td><td>${legs2}</td>
+                  <td>${s2} <small>${avg2}</small></td>`;
+  vorrundeTable.appendChild(tr);
+});
+
+
+
+  // Vorrundentabelle
+  const vArray = Object.keys(stats).map(n=>{
+    const d=stats[n]; d.name=n; d.avg=d.spiele>0?d.avgSum/d.spiele:0; return d;
+  }).sort((a,b)=>b.punkte-a.punkte||(b.legsPlus-b.legsMinus)-(a.legsPlus-a.legsMinus)||b.avg-a.avg);
+
+  vArray.forEach((d,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${d.name}</td><td>${d.spiele}</td><td>${d.siege}</td><td>${d.niederlagen}</td>
+                  <td>${d.legsPlus}</td><td>${d.legsMinus}</td><td>${d.punkte}</td><td>${d.avg.toFixed(2)}</td>`;
+    statTable.appendChild(tr);
+  });
+
+// Finalrunde
+const finals = fLines.slice(1).map(l => l.split(","));
+
+finals.forEach((cols, idx) => {
+  addStats(cols);
+
+  const s1 = cols[2], s2 = cols[3];
+  const legs1 = cols[4], legs2 = cols[5];
+  const avg1 = parseFloat(cols[6]).toFixed(2);
+  const avg2 = parseFloat(cols[7]).toFixed(2);
+
+  const tr = document.createElement("tr");
+
+  if (idx < 2) {
+    tr.innerHTML = `<td>HF${idx+1}</td>
+      <td>${s1} <small>${avg1}</small></td>
+      <td>${legs1}</td><td>:</td><td>${legs2}</td>
+      <td>${s2} <small>${avg2}</small></td>`;
+    finalBracket.appendChild(tr);
+  } else {
+    const label = idx === 2 ? "P3" : "F";
+    tr.innerHTML = `<td>${label}</td>
+      <td>${s1} <small>${avg1}</small></td>
+      <td>${legs1}</td><td>:</td><td>${legs2}</td>
+      <td>${s2} <small>${avg2}</small></td>`;
+    final2.appendChild(tr);
+  }
+});
+
+
+  // Endtabelle sortieren nach Finalplatz
+const [hf1,hf2,sp3,finale]=finals;
+const winnerFinal = parseInt(finale[4])>parseInt(finale[5])?finale[2]:finale[3];
+const loserFinal  = winnerFinal===finale[2]?finale[3]:finale[2];
+const winner3     = parseInt(sp3[4])>parseInt(sp3[5])?sp3[2]:sp3[3];
+const loser3      = winner3===sp3[2]?sp3[3]:sp3[2];
+let finalSorted=[winnerFinal,loserFinal,winner3,loser3];
+
+// Vorrundentabelle bereits sortiert nach Punkten
+vArray.forEach(d=>{if(!finalSorted.includes(d.name)) finalSorted.push(d.name);});
+
+// Höchstes Checkout / Highscore
+let maxCheckout = Math.max(...vArray.map(d=>d.checkoutMax));
+let maxHighscore = Math.max(...vArray.map(d=>d.highscoreMax));
+
+finalSorted.forEach((n,i)=>{
+    const d = stats[n];
+    const avg = (d.spiele>0 ? (d.avgSum/d.spiele).toFixed(2) : "0.00");
+    const quote = d.doppelSum ? ((d.doppelTrefferSum / d.doppelSum) * 100).toFixed(1) + "%" : "0.0%";
+
+    // Punkte nach Regeln
+    let punkte = 0;
+
+    // Vorrundenpunkte
+    const vRank = vArray.findIndex(v=>v.name===n);
+    if(vRank===0) punkte += 5;
+    else if(vRank===1) punkte += 2;
+
+    // Finalpunkte
+    if(i===0) punkte += 10; // Gesamtsieger
+    else if(i===1) punkte += 6; // Gesamtzweiter
+    else if(i===2) punkte += 3; // Gesamtdritter
+    else if(i===3) punkte += 1; // Gesamtvierter
+
+    // Bonuspunkte
+    if(d.checkoutMax === maxCheckout) punkte += 2;
+    if(d.highscoreMax === maxHighscore) punkte += 2;
+
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${n}</td><td>${d.spiele}</td><td>${d.siege}</td><td>${d.niederlagen}</td>
+      <td>${d.legsPlus}</td><td>${d.legsMinus}</td><td>${punkte}</td><td>${avg}</td>
+      <td>${d.doppelSum}</td><td>${quote}</td><td>${d.checkoutMax}</td><td>${d.highscoreMax}</td>`;
+    endTable.appendChild(tr);
+});
+}
+ladeSpiele();
