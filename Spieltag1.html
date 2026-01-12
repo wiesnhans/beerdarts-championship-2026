@@ -131,7 +131,8 @@ async function ladeSpiele() {
  function addStats(cols) {
   const s1 = cols[2], s2 = cols[3];
   const legs1 = parseInt(cols[4]), legs2 = parseInt(cols[5]);
-  const avg1 = parseFloat(cols[6].replace(",", ".")), avg2 = parseFloat(cols[7].replace(",", "."));
+  //const avg1 = parseFloat(cols[6].replace(",", ".")), avg2 = parseFloat(cols[7].replace(",", "."));
+  const avg1 = parseFloat(cols[6]), avg2 = parseFloat(cols[7]);
   const dbl1 = parseInt(cols[10]), dbl2 = parseInt(cols[11]); // Versuche
   const hs1  = parseInt(cols[12]), hs2  = parseInt(cols[13]);
   const co1  = parseInt(cols[14]), co2  = parseInt(cols[15]);
@@ -162,9 +163,12 @@ vLines.slice(1).forEach(cols=>{
 
   const s1 = cols[2], s2 = cols[3];
   const legs1 = cols[4], legs2 = cols[5];
-  const avg1 = parseFloat(cols[6].replace(",", ".")).toFixed(2);
-  const avg2 = parseFloat(cols[7].replace(",", ".")).toFixed(2);
+  //const avg1 = parseFloat(cols[6].replace(",", ".")).toFixed(2);
+  //const avg2 = parseFloat(cols[7].replace(",", ".")).toFixed(2);
+  const avg1 = parseFloat(cols[6]).toFixed(2);
+  const avg2 = parseFloat(cols[7]).toFixed(2);
 
+  
   const tr = document.createElement("tr");
   tr.innerHTML = `<td>${s1} <small>${avg1}</small></td>
                   <td>${legs1}</td><td>:</td><td>${legs2}</td>
@@ -251,5 +255,6 @@ ladeSpiele();
 
 </body>
 </html>
+
 
 
