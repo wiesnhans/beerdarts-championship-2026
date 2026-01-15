@@ -283,9 +283,6 @@
                     complete: function(results) {
                         currentData = results.data;
                         
-                        document.getElementById('loading').style.display = 'none';
-                        document.getElementById('gamesContainer').style.display = 'block';
-
                         // Zeige geladene Datei an
                         const loadedFileEl = document.getElementById('loadedFile');
                         if (loadedFileEl) {
