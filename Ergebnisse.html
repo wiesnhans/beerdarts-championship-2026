@@ -183,6 +183,20 @@
             color: #667eea;
             font-weight: 600;
         }
+                
+        .loaded-file {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+        }
+        
+        .loaded-file::before {
+            content: "📁 ";
+        }
     </style>
 </head>
 <body>
@@ -224,6 +238,7 @@
         <div class="loading" id="loading" style="display: none;">Lade Spiele...</div>
         
         <div class="games-container" id="gamesContainer">
+            <div class="loaded-file" id="loadedFile" style="display: none;"></div>
             <div id="gamesList"></div>
             <div class="submit-section">
                 <button onclick="saveResults()">Ergebnisse speichern</button>
