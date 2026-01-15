@@ -270,6 +270,12 @@
                         displayGames(currentData);
                         document.getElementById('loading').style.display = 'none';
                         document.getElementById('gamesContainer').style.display = 'block';
+
+                        // Zeige geladene Datei an
+                        const loadedFileEl = document.getElementById('loadedFile');
+                        loadedFileEl.textContent = `Geladene Datei: ${filename}`;
+                        loadedFileEl.style.display = 'block';
+                        
                         showMessage('Spiele erfolgreich geladen!', 'success');
                     },
                     error: function(error) {
