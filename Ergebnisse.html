@@ -267,14 +267,20 @@
                     skipEmptyLines: true,
                     complete: function(results) {
                         currentData = results.data;
-                        displayGames(currentData);
+                        
                         document.getElementById('loading').style.display = 'none';
                         document.getElementById('gamesContainer').style.display = 'block';
 
                         // Zeige geladene Datei an
                         const loadedFileEl = document.getElementById('loadedFile');
-                        loadedFileEl.textContent = `Geladene Datei: ${filename}`;
-                        loadedFileEl.style.display = 'block';
+                        if (loadedFileEl) {
+                            loadedFileEl.textContent = `Geladene Datei: ${filename}`;
+                            loadedFileEl.style.display = 'block';
+                        }
+                        
+                        displayGames(currentData);
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('gamesContainer').style.display = 'block';
                         
                         showMessage('Spiele erfolgreich geladen!', 'success');
                     },
