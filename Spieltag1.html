@@ -3,7 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <title>Beerdarts Championship – Spieltag 1</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0 }
+    nav { background:#222; padding:10px }
+    nav a { color:#fff; margin-right:15px; text-decoration:none; font-weight:bold }
+    main { padding:20px }
+    table { width:60%; border-collapse:collapse; background:#fff }
+    th, td { border:1px solid #ccc; padding:8px; text-align:center }
+    th { background:#eee }
+   /* Mobile Basis */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 14px;
+}
+
+main {
+  padding: 12px;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav a {
+  margin: 5px 10px 5px 0;
+  font-size: 14px;
+}
+table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+
+  h1 { font-size: 20px; }
+  h2 { font-size: 18px; }
+  h3 { font-size: 16px; }
+
+  th, td {
+    padding: 6px;
+  }
+
+  nav a {
+    font-size: 13px;
+  }
+}
+
+  </style>
 </head>
 <body>
 
@@ -73,3 +125,4 @@
 
 </body>
 </html>
+
