@@ -92,5 +92,17 @@ fetch("nav.html")
   </div>
 </main>
 
+<script type="module">
+import { initDropdown } from './dropdown.js';
+
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("nav").innerHTML = html;
+    initDropdown(); // erst nach fetch ausführen
+  });
+</script>
+
+
 </body>
 </html>
