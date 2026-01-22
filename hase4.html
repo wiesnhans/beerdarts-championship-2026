@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beerdarts Championship – Spieltag 1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="nav"></div>
+
+<script>
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => document.getElementById("nav").innerHTML = html);
+</script>
+
+<main>
+<img src="pics\hase4.jpeg" alt="Profilbild" class="profile-pic">
+
+  <!-- Steckbrief -->
+  <dl class="steckbrief">
+    
+    <dt>Spitzname:</dt>
+    <dd>Hase4</dd>
+
+    <dt>Alter:</dt>
+    <dd>45</dd>
+
+    <dt>Darts:</dt>
+    <dd>Unicorn Phase 4</dd>
+
+    <dt>Einlaufmusik:</dt>
+    <dd>Tief im Westen</dd>
+
+    <dt>Aktiv seit:</dt>
+    <dd>2023</dd>
+
+    <dt>Höchster Score:</dt>
+    <dd>171</dd>
+
+    <dt>Höchster Average:</dt>
+    <dd>57,33</dd>
+    <dt>Erfolge:</dt>
+    <dd></dd>
+
+  </dl>
+
+
+
+</main>
+
+
+
+
+
+
+</body>
+</html>

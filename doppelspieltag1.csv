@@ -1,4 +1,4 @@
-uid,modus,spieler1,spieler2,legsspieler1,legsspieler2,avgspieler1,avgspieler2
-1,5,WiesnJu,HasiNator,3,1,28.97,29.73
-2,5,JuSe,WiesNator,2,3,36.76,39.61
-3,5,WiesnHase,JuNator,3,1,45.61,41.34
+﻿uid,modus,spieler1,spieler2,legsspieler1,legsspieler2,avgspieler1,avgspieler2,dartsspieler1,dartsspieler2
+1,5,WiesnJu,HasiNator,3,1,28.97,29.73,200,200
+2,5,JuSe,WiesNator,2,3,36.76,39.61,185,187
+3,5,WiesnHase,JuNator,3,1,45.61,41.34,118,118

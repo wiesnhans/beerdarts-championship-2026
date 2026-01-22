@@ -2,79 +2,23 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Beerdarts Championship – Spieltag 5</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0 }
-    nav { background:#222; padding:10px }
-    nav a { color:#fff; margin-right:15px; text-decoration:none; font-weight:bold }
-    main { padding:20px }
-    table { width:60%; border-collapse:collapse; background:#fff }
-    th, td { border:1px solid #ccc; padding:8px; text-align:center }
-    th { background:#eee }
-   /* Mobile Basis */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-size: 14px;
-}
-
-main {
-  padding: 12px;
-}
-nav {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-nav a {
-  margin: 5px 10px 5px 0;
-  font-size: 14px;
-}
-table {
-  width: 100%;
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 768px) {
-
-  h1 { font-size: 20px; }
-  h2 { font-size: 18px; }
-  h3 { font-size: 16px; }
-
-  th, td {
-    padding: 6px;
-  }
-
-  nav a {
-    font-size: 13px;
-  }
-}
-
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beerdarts Championship – Spieltag 8</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-  <a href="index.html">Tabelle</a>
-  <a href="Spieltag1.html">Spieltag 1</a>
-  <a href="Spieltag2.html">Spieltag 2</a>
-  <a href="Spieltag3.html">Spieltag 3</a>
-  <a href="Spieltag4.html">Spieltag 4</a>
-  <a href="Spieltag5.html">Spieltag 5</a>
-  <a href="Spieltag6.html">Spieltag 6</a>
-  <a href="Spieltag7.html">Spieltag 7</a>
-  <a href="Spieltag8.html">Spieltag 8</a>
-  <a href="Doppel.html">Doppel</a>
-</nav>
+<div id="nav"></div>
+
+<script>
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => document.getElementById("nav").innerHTML = html);
+</script>
 
 <main>
   <h1>Spieltag 8</h1>
-    <p>@??</p>
+    <p>@Craft Beer Club</p>
     <p>xx.0x.2026</p>
 
     <h3>Vorrunde Best of 3 Legs</h3>
@@ -118,7 +62,16 @@ table {
 
 </main>
 
+<script type="module">
+import { initDropdown } from './dropdown.js';
 
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("nav").innerHTML = html;
+    initDropdown(); // erst nach fetch ausführen
+  });
+</script>
 
 
 

@@ -2,127 +2,80 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beerdarts Championship – Spieltag 2</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0 }
-    nav { background:#222; padding:10px }
-    nav a { color:#fff; margin-right:15px; text-decoration:none; font-weight:bold }
-    main { padding:20px }
-    table { width:60%; border-collapse:collapse; background:#fff }
-    th, td { border:1px solid #ccc; padding:8px; text-align:center }
-    th { background:#eee }
-   /* Mobile Basis */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-size: 14px;
-}
-
-main {
-  padding: 12px;
-}
-nav {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-nav a {
-  margin: 5px 10px 5px 0;
-  font-size: 14px;
-}
-table {
-  width: 100%;
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 768px) {
-
-  h1 { font-size: 20px; }
-  h2 { font-size: 18px; }
-  h3 { font-size: 16px; }
-
-  th, td {
-    padding: 6px;
-  }
-
-  nav a {
-    font-size: 13px;
-  }
-}
-
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-  <a href="index.html">Tabelle</a>
-  <a href="Spieltag1.html">Spieltag 1</a>
-  <a href="Spieltag2.html">Spieltag 2</a>
-  <a href="Spieltag3.html">Spieltag 3</a>
-  <a href="Spieltag4.html">Spieltag 4</a>
-  <a href="Spieltag5.html">Spieltag 5</a>
-  <a href="Spieltag6.html">Spieltag 6</a>
-  <a href="Spieltag7.html">Spieltag 7</a>
-  <a href="Spieltag8.html">Spieltag 8</a>
-  <a href="Doppel.html">Doppel</a>
-</nav>
+<div id="nav"></div>
+
+<script>
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => document.getElementById("nav").innerHTML = html);
+</script>
 
 <main>
   <h1>Spieltag 2</h1>
-    <p>@Agip Taverne</p>
+    <p>@Agip Tavern</p>
     <p>xx.0x.2026</p>
 
-    <h3>Vorrunde Best of 3 Legs</h3>
  
 
-<table id="vorrundeSpiele">
-  <colgroup>
-    <col style="width:44%"> <!-- Spieler 1 -->
-    
-    <col style="width:5%">  <!-- Legs1 -->
-    <col style="width:2%">  <!-- : -->
-    <col style="width:5%">  <!-- Legs2 -->
-    
-    <col style="width:44%"> <!-- Spieler 2 -->
-  </colgroup>
-  <tr>
-    <th>Spieler 1</th><th>Legs</th><th>:</th><th>Legs</th><th>Spieler 2</th>
-  </tr>
-</table>
+<h3>Vorrunde Best of 3 Legs</h3>
+  <table id="vorrundeSpiele">
+    <tr>
+      <th>Spieler 1</th><th>Legs</th><th>:</th><th>Legs</th><th>Spieler 2</th>
+    </tr>
+  </table>
+
+  <h2>Vorrunde – Tabelle</h2>
+  <table id="spielerTabelle">
+    <tr>
+      <th>Platz</th><th>Spieler</th><th>Spiele</th><th>Siege</th><th>Niederlagen</th>
+      <th>Legs+</th><th>Legs-</th><th>Punkte</th><th>AVG</th>
+    </tr>
+  </table>
+
+  <h2>Finalrunde (Top 4)</h2>
+  <h3>Halbfinale</h3>
+  <table id="finalBracket">
+    <tr><th></th><th>Spieler 1</th><th>Legs</th><th>:</th><th>Legs</th><th>Spieler 2</th></tr>
+  </table>
+  <h3>Finals</h3>
+  <table id="final2">
+    <tr><th></th><th>Spieler 1</th><th>Legs</th><th>:</th><th>Legs</th><th>Spieler 2</th></tr>
+  </table>
+
+  <h2>Tabelle Spieltag 1</h2>
+  <table id="spieltag1Tabelle">
+    <tr>
+      <th>Platz</th><th>Spieler</th><th>Spiele</th><th>Siege</th><th>Niederlagen</th>
+      <th>Legs+</th><th>Legs-</th><th>Punkte</th><th>AVG</th>
+      <th>Doppel Versuche</th><th>Doppel Quote</th><th>Highest Checkout</th><th>Highscore</th>
+    </tr>
+  </table>
 
 
-
-
-
-<h2>Vorrunde – Tabelle</h2>
-<table id="spielerTabelle">
-  <tr>
-    <th>Platz</th>
-    <th>Spieler</th>
-    <th>Spiele</th>
-    <th>Siege</th>
-    <th>Niederlagen</th>
-    <th>Legs+</th>
-    <th>Legs-</th>
-    <th>Punkte</th>
-    <th>AVG</th>
-  </tr>
-</table>
+<script src="spieltag2.js" type="module"></script>
 
 
 
 </main>
 
+<script type="module">
+import { initDropdown } from './dropdown.js';
 
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("nav").innerHTML = html;
+    initDropdown(); // erst nach fetch ausführen
+  });
+</script>
 
 
 
 </body>
 </html>
-
-
