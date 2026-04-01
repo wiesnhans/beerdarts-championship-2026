@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beerdarts Championship – Spieltag 1</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 </head>
 <body>
 
@@ -23,42 +24,55 @@ fetch("nav.html")
 
   <h3>Vorrunde Best of 3 Legs</h3>
   <table id="vorrundeSpiele">
-    <tr>
-      <th>Spieler 1</th><th></th><th>:</th><th></th><th>Spieler 2</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Spieler 1</th><th></th><th>:</th><th></th><th>Spieler 2</th>
+      </tr>
+    </thead>
+    <tbody id="vorrundeSpieleBody"></tbody>
   </table>
 
   <h2>Vorrunde – Tabelle</h2>
   <table id="spielerTabelle">
-    <tr>
-      <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
-      <th>L+</th><th>L-</th><th>P</th><th>AVG</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
+        <th>L+</th><th>L-</th><th>P</th><th>AVG</th>
+      </tr>
+    </thead>
+    <tbody id="spielerTabelleBody"></tbody>
   </table>
 
   <h2>Finalrunde (Top 4)</h2>
   <h3>Halbfinale</h3>
   <table id="finalBracket">
-    <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    <thead>
+      <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    </thead>
+    <tbody id="finalBracketBody"></tbody>
   </table>
+
   <h3>Finals</h3>
   <table id="final2">
-    <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    <thead>
+      <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    </thead>
+    <tbody id="final2Body"></tbody>
   </table>
 
   <h2>Tabelle Spieltag 1</h2>
   <table id="spieltag1Tabelle">
-    <tr>
-      <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
-      <th>L+</th><th>Ls-</th><th>P</th><th>AVG</th>
-      <th>D V</th><th>D Q</th><th>HC</th><th>HS</th>
-    </tr>
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
+        <th>L+</th><th>Ls-</th><th>P</th><th>AVG</th>
+        <th>D V</th><th>D Q</th><th>HC</th><th>HS</th>
+      </tr>
+    </thead>
+    <tbody id="gesamtstandBody"></tbody>
   </table>
 
-
-<script src="spieltag1.js" type="module"></script>
-
-
+  <script src="spieltag1.js" type="module"></script>
 
 </main>
 
@@ -72,8 +86,6 @@ fetch("nav.html")
     initDropdown(); // erst nach fetch ausführen
   });
 </script>
-
-
 
 </body>
 </html>

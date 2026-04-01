@@ -1,151 +1,359 @@
-const vorrundeUrl = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/vorrundespieltag1.csv";
-const finalUrl   = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/finalsspieltag1.csv";
+// ─────────────────────────────────────────────────────────────
+// beerdarts-db.js – Fertige Version für Spieltag 1 (2026)
+// ─────────────────────────────────────────────────────────────
 
-async function ladeSpiele() {
-  const [vText, fText] = await Promise.all([fetch(vorrundeUrl), fetch(finalUrl)].map(r=>r.then(res=>res.text())));
+const DB_URL = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/2026-01-16.db";
+const SPIELTAG_NR = 1;
 
-  const vLines = vText.split("\n").filter(l=>l.trim()!=="");
-  const fLines = fText.split("\n").filter(l=>l.trim()!=="");
+// Punkte
+const PUNKTE_VORRUNDE = [5, 2, 0, 0]; // Platz 1–4 Vorrunde
+const PUNKTE_FINAL = [10, 6, 3, 1];   // Endtabelle
+const PUNKTE_HIGHSCORE = 2;
+const PUNKTE_HIGHCO = 2;
 
-  const vorrundeTable = document.getElementById("vorrundeSpiele");
-  const statTable     = document.getElementById("spielerTabelle");
-  const finalBracket  = document.getElementById("finalBracket");
-  const final2        = document.getElementById("final2");
-  const endTable      = document.getElementById("spieltag1Tabelle");
+// Spieltag-Datum
+const SPIELTAG_DATUM = {
+  1: "2026-01-09",
+};
 
-  const stats = {};
-
- function addStats(cols) {
-  const s1 = cols[2], s2 = cols[3];
-  const legs1 = parseInt(cols[4]), legs2 = parseInt(cols[5]);
-  const avg1 = parseFloat(cols[6].replace(",", ".")), avg2 = parseFloat(cols[7].replace(",", "."));
-  const dbl1 = parseInt(cols[10]), dbl2 = parseInt(cols[11]); // Versuche
-  const hs1  = parseInt(cols[12]), hs2  = parseInt(cols[13]);
-  const co1  = parseInt(cols[14]), co2  = parseInt(cols[15]);
-
-  [[s1,legs1,legs2,avg1,dbl1,co1,hs1],[s2,legs2,legs1,avg2,dbl2,co2,hs2]].forEach(([name,lp,lm,av,dbl,co,hs])=>{
-    if(!stats[name]) stats[name]={spiele:0,siege:0,niederlagen:0,legsPlus:0,legsMinus:0,punkte:0,avgSum:0,doppelSum:0,doppelTrefferSum:0,checkoutMax:0,highscoreMax:0};
-    const d = stats[name];
-    d.spiele++;
-    d.legsPlus += lp;
-    d.legsMinus += lm;
-    d.avgSum += av;
-    d.doppelSum += dbl; // Versuche
-    d.doppelTrefferSum += lp; // erfolgreiche Doppel = Legs gewonnen? (oder musst du genaue Treffer haben)
-    d.checkoutMax = Math.max(d.checkoutMax, co);
-    d.highscoreMax = Math.max(d.highscoreMax, hs);
-    if(lp>lm){d.siege++;d.punkte+=2;} else if(lp<lm){d.niederlagen++;} else {d.punkte++;}
-  });
-}
-
-
-  // Vorrunde anzeigen
-// Vorrunde anzeigen
-vLines.slice(1).forEach(cols=>{
-  cols = cols.split(",");
-
-  // Stats aktualisieren
-  addStats(cols);
-
-  const s1 = cols[2], s2 = cols[3];
-  const legs1 = cols[4], legs2 = cols[5];
-  const avg1 = parseFloat(cols[6]).toFixed(2); // replace(",", ".") nicht mehr nötig
-  const avg2 = parseFloat(cols[7]).toFixed(2);
-
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${s1} <small>${avg1}</small></td>
-                  <td>${legs1}</td><td>:</td><td>${legs2}</td>
-                  <td>${s2} <small>${avg2}</small></td>`;
-  vorrundeTable.appendChild(tr);
+// ── sql.js Initialisierung
+let SQL_READY = initSqlJs({
+  locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
 });
 
+async function ladeSpiele() {
+  const [SQL, dbBuffer] = await Promise.all([
+    SQL_READY,
+    fetch(DB_URL).then(r => {
+      if (!r.ok) throw new Error(`DB nicht erreichbar: ${r.status}`);
+      return r.arrayBuffer();
+    })
+  ]);
 
+  const db = new SQL.Database(new Uint8Array(dbBuffer));
+  function q(sql) {
+    const stmt = db.prepare(sql);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return rows;
+  }
 
-  // Vorrundentabelle
-  const vArray = Object.keys(stats).map(n=>{
-    const d=stats[n]; d.name=n; d.avg=d.spiele>0?d.avgSum/d.spiele:0; return d;
-  }).sort((a,b)=>b.punkte-a.punkte||(b.legsPlus-b.legsMinus)-(a.legsPlus-a.legsMinus)||b.avg-a.avg);
+  // ── Spieltagfilter
+  let spieltagFilter = "";
+  if (SPIELTAG_NR !== "all") {
+    const datum = SPIELTAG_DATUM[SPIELTAG_NR];
+    const start = `${datum} 00:00:00`;
+    const end = new Date(`${datum}T00:00:00`);
+    end.setDate(end.getDate() + 1);
+    const yyyy = end.getFullYear();
+    const mm = String(end.getMonth() + 1).padStart(2,'0');
+    const dd = String(end.getDate()).padStart(2,'0');
+    const endStr = `${yyyy}-${mm}-${dd} 01:00:00`;
+    spieltagFilter = `AND m.created_at >= '${start}' AND m.created_at < '${endStr}'`;
+  }
 
-  vArray.forEach((d,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML=`<td>${i+1}</td><td>${d.name}</td><td>${d.spiele}</td><td>${d.siege}</td><td>${d.niederlagen}</td>
-                  <td>${d.legsPlus}</td><td>${d.legsMinus}</td><td>${d.punkte}</td><td>${d.avg.toFixed(2)}</td>`;
-    statTable.appendChild(tr);
+  // ── Spiele aus DB laden
+  const gameRows = q(`
+    SELECT 
+      ms.xGameMpId AS gameId,
+      gs.spielerId,
+      sp.name,
+      m.siegerId,
+      m.bestOfLegs,
+      SUM(gs.gesamtDarts) AS totalDarts,
+      SUM(gs.gesamtScore) AS totalScore,
+      ROUND(SUM(gs.gesamtScore)*3.0 / SUM(gs.gesamtDarts), 2) AS avg,
+      SUM(CASE WHEN gs.spielerId = l.siegerId THEN 1 ELSE 0 END) AS legsWon,
+      COUNT(DISTINCT gs.legId) AS legsPlayed,
+      SUM(auf.dartsOnDouble) AS doppelVersuche,
+      MAX(auf.highscore) AS highscore,
+      MAX(auf.highestcheckout) AS highestcheckout
+    FROM xGameSpieler gs
+    JOIN xGameMpLeg l ON gs.legId = l.id
+    JOIN xGameMpSet ms ON l.setId = ms.id
+    JOIN xGameMp m ON ms.xGameMpId = m.id
+    JOIN Spieler sp ON gs.spielerId = sp.id
+    LEFT JOIN (
+        SELECT 
+          entityId,
+          SUM(dartsOnDouble) AS dartsOnDouble,
+          MAX(score) AS highscore,
+          MAX(CASE WHEN checkout = 1 THEN score ELSE 0 END) AS highestcheckout
+        FROM AufnahmeMp
+        GROUP BY entityId
+    ) auf ON auf.entityId = gs.id
+    WHERE gs.spielerId IN (2,3,4,6) ${spieltagFilter}
+    GROUP BY ms.xGameMpId, gs.spielerId, sp.name, m.siegerId, m.bestOfLegs
+    ORDER BY m.created_at, ms.xGameMpId, gs.spielerId
+  `);
+
+  // ── Spiele nach GameId gruppieren
+  const gamesById = {};
+  gameRows.forEach(g => {
+    if (!gamesById[g.gameId]) gamesById[g.gameId] = { p1:null, p2:null, winner:null, bestOfLegs:g.bestOfLegs };
+    const game = gamesById[g.gameId];
+    if (!game.p1) game.p1 = g; else game.p2 = g;
+    if (g.spielerId === g.siegerId) game.winner = g;
   });
 
-// Finalrunde
-const finals = fLines.slice(1).map(l => l.split(","));
+  // ── Vorrunde / Finalspiele trennen
+  const allowedPlayers = [2,3,4,6];
+  let vorrundeGames = [];
+  let finalGames = [];
+  Object.values(gamesById).forEach(g => {
+    if (!allowedPlayers.includes(g.p1?.spielerId) || !allowedPlayers.includes(g.p2?.spielerId)) return;
+    if (g.bestOfLegs <= 3) vorrundeGames.push(g);
+    else finalGames.push(g);
+  });
 
-finals.forEach((cols, idx) => {
-  addStats(cols);
 
-  const s1 = cols[2], s2 = cols[3];
-  const legs1 = cols[4], legs2 = cols[5];
-  const avg1 = parseFloat(cols[6]).toFixed(2);
-  const avg2 = parseFloat(cols[7]).toFixed(2);
+   
 
-  const tr = document.createElement("tr");
 
-  if (idx < 2) {
-    tr.innerHTML = `<td>HF${idx+1}</td>
-      <td>${s1} <small>${avg1}</small></td>
-      <td>${legs1}</td><td>:</td><td>${legs2}</td>
-      <td>${s2} <small>${avg2}</small></td>`;
-    finalBracket.appendChild(tr);
-  } else {
-    const label = idx === 2 ? "P3" : "F";
-    tr.innerHTML = `<td>${label}</td>
-      <td>${s1} <small>${avg1}</small></td>
-      <td>${legs1}</td><td>:</td><td>${legs2}</td>
-      <td>${s2} <small>${avg2}</small></td>`;
-    final2.appendChild(tr);
+
+// ── Spielerstatistiken Vorrunde (Best-of-3)
+const vorrundeStats = {};
+vorrundeGames.forEach(g => {
+  [g.p1, g.p2].forEach(p => {
+    if (!p) return; // falls Spieler nicht vorhanden
+
+    if (!vorrundeStats[p.name]) vorrundeStats[p.name] = {
+      name: p.name,
+      spiele: 0,
+      siege: 0,
+      niederlagen: 0,
+      legsPlus: 0,
+      legsMinus: 0,
+      totalScore:0, totalDarts:0, avg:0, 
+      vorpunkte: 0,
+      punkte: 0
+    };
+
+    const s = vorrundeStats[p.name];
+    s.spiele += 1;
+
+    const legsWon = Number(p.legsWon) || 0;
+    const legsPlayed = Number(p.legsPlayed) || 0;
+
+    if (p.spielerId === g.winner?.spielerId) {
+      s.siege += 1;
+      s.vorpunkte += 2; // 2 Punkte pro Sieg
+    } else {
+      s.niederlagen += 1;
+    }
+
+    s.legsPlus += legsWon;
+    s.legsMinus += (legsPlayed - legsWon);
+    s.totalScore += p.totalScore || 0;
+      s.totalDarts += p.totalDarts || 0;
+   });
+});
+ 
+Object.values(vorrundeStats).forEach(s => {
+  s.avg = s.totalDarts > 0 ? (s.totalScore * 3 / s.totalDarts).toFixed(2) : "0.00";
+});
+
+// ── Vorrundenplatzpunkte (für Endtabelle)
+const vorrundeArray = Object.values(vorrundeStats)
+  .sort((a,b) => b.vorpunkte - a.vorpunkte);
+
+
+
+vorrundeArray.forEach((p,i) => {
+  p.punkte = PUNKTE_VORRUNDE[i] || 0; // Platz 1 = 5, Platz 2 = 2, Rest 0
+});
+ 
+
+  // ── Gesamtstats Endtabelle (inkl. Finalrunde)
+  const stats = {};
+  const addStat = (g, isVorrunde = false) => {
+    [g.p1, g.p2].forEach(p => {
+      if (!stats[p.name]) stats[p.name] = {
+        name: p.name, spiele:0, siege:0, niederlagen:0,
+        legsPlus:0, legsMinus:0,
+        totalScore:0, totalDarts:0, avg:0,  // <--- neu
+        doppelSum:0, doppelQuot:0,
+        checkoutMax:0, highscoreMax:0,
+        punkte:0
+      };
+      const s = stats[p.name];
+      s.spiele += 1;
+      if (p.spielerId === g.winner?.spielerId) s.siege += 1; else s.niederlagen += 1;
+      s.legsPlus += p.legsWon;
+      s.legsMinus += (p.legsPlayed - p.legsWon);
+      s.totalScore += p.totalScore || 0;
+      s.totalDarts += p.totalDarts || 0;
+      s.doppelSum += p.doppelVersuche || 0;
+      s.checkoutMax = Math.max(s.checkoutMax, p.highestcheckout || 0);
+      s.highscoreMax = Math.max(s.highscoreMax, p.highscore || 0);
+       // ── Vorrundenpunkte hinzufügen
+    if (isVorrunde && vorrundeStats[p.name]) {
+      s.punkte = vorrundeStats[p.name].punkte || 0;
+    }
+     console.log(`DEBUG: ${p.name} -> totalScore: ${p.totalScore}, totalDarts: ${p.totalDarts}`);
+    });
+  };
+
+  // ── Gesamtstats bauen
+vorrundeGames.forEach(g => addStat(g, true));
+finalGames.forEach(g => addStat(g));
+
+  // ── Durchschnitt berechnen (TotalScore / TotalDarts * 3)
+Object.values(stats).forEach(s => {
+  s.avg = s.totalDarts > 0 ? (s.totalScore * 3 / s.totalDarts).toFixed(2) : "0.00";
+});
+
+  // Doppelpunkte in Prozent
+  Object.values(stats).forEach(s => {
+    s.doppelQuot = s.doppelSum>0 ? ((s.legsPlus/s.doppelSum)*100).toFixed(2) : "0.00";
+  });
+
+ 
+ 
+
+
+
+  // Finalspiele Punkte
+  if(finalGames.length>=4){
+    const [hf1, hf2, spielUmPlatz3, finale] = finalGames;
+    const siegerF = finale.winner.name;
+    const verliererF = finale.p1.name===siegerF ? finale.p2.name : finale.p1.name;
+    stats[siegerF].punkte += PUNKTE_FINAL[0];
+    stats[verliererF].punkte += PUNKTE_FINAL[1];
+
+    const siegerPl3 = spielUmPlatz3.winner.name;
+    const verliererPl3 = spielUmPlatz3.p1.name===siegerPl3 ? spielUmPlatz3.p2.name : spielUmPlatz3.p1.name;
+    stats[siegerPl3].punkte += PUNKTE_FINAL[2];
+    stats[verliererPl3].punkte += PUNKTE_FINAL[3];
+  }
+
+  // ── Bonuspunkte (Highscore & Checkout) nur für Bestwerte
+const allPlayers = Object.values(stats);
+
+// Highscore-Bonus
+const maxHighscore = Math.max(...allPlayers.map(p => p.highscoreMax || 0));
+allPlayers.forEach(p => {
+  if(p.highscoreMax === maxHighscore && maxHighscore > 0){
+    p.punkte += PUNKTE_HIGHSCORE;
+  }
+});
+
+// Checkout-Bonus
+const maxCheckout = Math.max(...allPlayers.map(p => p.checkoutMax || 0));
+allPlayers.forEach(p => {
+  if(p.checkoutMax === maxCheckout && maxCheckout > 0){
+    p.punkte += PUNKTE_HIGHCO;
   }
 });
 
 
-  // Endtabelle sortieren nach Finalplatz
-const [hf1,hf2,sp3,finale]=finals;
-const winnerFinal = parseInt(finale[4])>parseInt(finale[5])?finale[2]:finale[3];
-const loserFinal  = winnerFinal===finale[2]?finale[3]:finale[2];
-const winner3     = parseInt(sp3[4])>parseInt(sp3[5])?sp3[2]:sp3[3];
-const loser3      = winner3===sp3[2]?sp3[3]:sp3[2];
-let finalSorted=[winnerFinal,loserFinal,winner3,loser3];
 
-// Vorrundentabelle bereits sortiert nach Punkten
-vArray.forEach(d=>{if(!finalSorted.includes(d.name)) finalSorted.push(d.name);});
+  // ── DOM: Vorrunde Tabelle
+  const vorrundeTabelleBody = document.getElementById("spielerTabelleBody");
+  if(vorrundeTabelleBody){
+    vorrundeTabelleBody.innerHTML = "";
+    vorrundeArray.forEach((p,i)=>{
+     
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${p.name}</td>
+        <td>${p.spiele}</td>
+        <td>${p.siege}</td>
+        <td>${p.niederlagen}</td>
+        <td>${p.legsPlus}</td>
+        <td>${p.legsMinus}</td>
+        <td>${p.vorpunkte}</td>
+        <td>${p.avg}</td>
+      `;
+      vorrundeTabelleBody.appendChild(tr);
+    });
+  }
 
-// Höchstes Checkout / Highscore
-let maxCheckout = Math.max(...vArray.map(d=>d.checkoutMax));
-let maxHighscore = Math.max(...vArray.map(d=>d.highscoreMax));
+  // ── DOM: Vorrunde Spiele
+  const vorrundeBody = document.getElementById("vorrundeSpieleBody");
+  if(vorrundeBody){
+    vorrundeBody.innerHTML="";
+    vorrundeGames.forEach(g=>{
+      const p1won = g.winner?.spielerId===g.p1.spielerId;
+      const tr = document.createElement("tr");
+      tr.innerHTML=`
+        <td style="${p1won?'font-weight:bold':''}">${g.p1.name} <small>${(+g.p1.avg).toFixed(2)}</small></td>
+        <td>${g.p1.legsWon}</td>
+        <td>:</td>
+        <td>${g.p2.legsWon}</td>
+        <td style="${!p1won?'font-weight:bold':''}">${g.p2.name} <small>${(+g.p2.avg).toFixed(2)}</small></td>
+      `;
+      vorrundeBody.appendChild(tr);
+    });
+  }
 
-finalSorted.forEach((n,i)=>{
-    const d = stats[n];
-    const avg = (d.spiele>0 ? (d.avgSum/d.spiele).toFixed(2) : "0.00");
-    const quote = d.doppelSum ? ((d.doppelTrefferSum / d.doppelSum) * 100).toFixed(1) + "%" : "0.0%";
+  // ── DOM: Finalrunde
+  const finalBracketBody = document.getElementById("finalBracketBody");
+  if(finalBracketBody && finalGames.length>=2){
+    finalBracketBody.innerHTML="";
+    finalGames.slice(0,2).forEach((g,idx)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML=`
+        <td>HF${idx+1}</td>
+        <td>${g.p1.name} <small>${(+g.p1.avg).toFixed(2)}</small></td>
+        <td>${g.p1.legsWon}</td><td>:</td><td>${g.p2.legsWon}</td>
+        <td>${g.p2.name} <small>${(+g.p2.avg).toFixed(2)}</small></td>`;
+      finalBracketBody.appendChild(tr);
+    });
+  }
 
-    // Punkte nach Regeln
-    let punkte = 0;
+  const final2Body = document.getElementById("final2Body");
+  if(final2Body && finalGames.length>=4){
+    final2Body.innerHTML="";
+    [["P3",2],["F",3]].forEach(([label,idx])=>{
+      if(!finalGames[idx]) return;
+      const g = finalGames[idx];
+      const tr = document.createElement("tr");
+      tr.innerHTML=`
+        <td>${label}</td>
+        <td>${g.p1.name} <small>${(+g.p1.avg).toFixed(2)}</small></td>
+        <td>${g.p1.legsWon}</td><td>:</td><td>${g.p2.legsWon}</td>
+        <td>${g.p2.name} <small>${(+g.p2.avg).toFixed(2)}</small></td>`;
+      final2Body.appendChild(tr);
+    });
+  }
 
-    // Vorrundenpunkte
-    const vRank = vArray.findIndex(v=>v.name===n);
-    if(vRank===0) punkte += 5;
-    else if(vRank===1) punkte += 2;
+  // ── DOM: Endtabelle Gesamt (inkl. Finals & Bonus)
+  const gesamtBody = document.getElementById("gesamtstandBody");
+  if(gesamtBody){
+    gesamtBody.innerHTML="";
+    const gesamtArray = Object.values(stats).sort((a,b)=>b.punkte - a.punkte);
+    gesamtArray.forEach((p,i)=>{
+     
+      const tr = document.createElement("tr");
+      tr.innerHTML=`
+        <td>${i+1}</td>
+        <td>${p.name}</td>
+        <td>${p.spiele}</td>
+        <td>${p.siege}</td>
+        <td>${p.niederlagen}</td>
+        <td>${p.legsPlus}</td>
+        <td>${p.legsMinus}</td>
+        <td>${p.punkte}</td>
+        <td>${p.avg}</td>
+        <td>${p.doppelSum}</td>
+        <td>${p.doppelQuot}</td>
+        <td>${p.checkoutMax}</td>
+        <td>${p.highscoreMax}</td>
+      `;
+      gesamtBody.appendChild(tr);
+    });
+  }
 
-    // Finalpunkte
-    if(i===0) punkte += 10; // Gesamtsieger
-    else if(i===1) punkte += 6; // Gesamtzweiter
-    else if(i===2) punkte += 3; // Gesamtdritter
-    else if(i===3) punkte += 1; // Gesamtvierter
-
-    // Bonuspunkte
-    if(d.checkoutMax === maxCheckout) punkte += 2;
-    if(d.highscoreMax === maxHighscore) punkte += 2;
-
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${i+1}</td><td>${n}</td><td>${d.spiele}</td><td>${d.siege}</td><td>${d.niederlagen}</td>
-      <td>${d.legsPlus}</td><td>${d.legsMinus}</td><td>${punkte}</td><td>${avg}</td>
-      <td>${d.doppelSum}</td><td>${quote}</td><td>${d.checkoutMax}</td><td>${d.highscoreMax}</td>`;
-    endTable.appendChild(tr);
-});
 }
-ladeSpiele();
+
+// ── Starten
+ladeSpiele().catch(err=>{
+  console.error("Fehler beim Laden der DB:", err);
+  document.body.insertAdjacentHTML("afterbegin",
+    `<div style="background:#e84a4a;color:#fff;padding:12px;font-family:sans-serif">
+      ⚠️ DB konnte nicht geladen werden: ${err.message}
+    </div>`);
+});
