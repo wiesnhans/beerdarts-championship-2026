@@ -1,112 +1,385 @@
-
-    
-    
-    
-   
-th, td { border:1px solid #ccc; padding:8px; text-align:center }
-th { background:#eee }
-   
+/* ========== RESET & GRUNDLAGEN ========== */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;;
-  background:#ffffff;
-  font-size: 14px;
-  margin:0
+:root {
+  --primary-color: #ff6b35;
+  --primary-dark: #d94e23;
+  --secondary-color: #ff8c52;
+  --bg-dark: #1a1a2e;
+  --bg-darker: #16213e;
+  --text-light: #e0e0e0;
+  --text-muted: #999;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --transition: all 0.3s ease;
 }
 
-main {
-  padding: 12px;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+  color: var(--text-light);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
 }
+
+/* ========== NAVIGATION ========== */
 nav {
-  background:darkgrey;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--primary-color);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  padding:10px 
+  padding: 12px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 nav a {
-  color:#fff; 
-  margin-right:15px; 
-  text-decoration:none; 
-  font-weight:bold;
-  margin: 5px 10px 5px 0;
-  font-size: 14px;
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 600;
+  margin: 8px 15px 8px 0;
+  font-size: 15px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: var(--transition);
+  position: relative;
 }
-table {
-  border-collapse: collapse;
-  width: 100%;
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
+
+nav a:hover {
+  color: var(--primary-color);
+  background: rgba(255, 107, 53, 0.1);
+  transform: translateX(2px);
 }
-  /* Dropdown Container */
+
+/* ========== DROPDOWN ========== */
 .dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* Dropdown Inhalte verstecken */
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: white;
-  min-width: 150px;
-  box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
-  z-index: 1;
+  top: 100%;
+  left: 0;
+  background: rgba(30, 30, 50, 0.95);
+  backdrop-filter: blur(10px);
+  min-width: 180px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 8px;
+  z-index: 1000;
+  overflow: hidden;
 }
 
-/* Links im Dropdown */
 .dropdown-content a {
   display: block;
-  padding: 5px 10px;
-  color: black;
+  padding: 12px 16px;
+  color: var(--text-light);
+  text-decoration: none;
+  transition: var(--transition);
+  border-left: 3px solid transparent;
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd;
+  background: rgba(255, 107, 53, 0.15);
+  border-left-color: var(--primary-color);
+  padding-left: 20px;
+  color: var(--secondary-color);
 }
 
-/* Dropdown anzeigen beim Hover */
 .dropdown:hover .dropdown-content {
   display: block;
 }
-.profile-pic { width:150px; height:150px; border-radius:50%; object-fit:cover; display:block; }
-.steckbrief { 
-  width: 100%;
-  max-width: 200px;
-  margin: 20px auto; /* oben 20px, links/rechts automatisch = zentriert */
-  background:#f9f9f9; 
-  padding:15px; 
-  border-radius:8px; 
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+
+/* ========== MAIN CONTENT ========== */
+main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.steckbrief dt { font-weight:bold; margin-top:10px; }
-.steckbrief dd { margin:0 0 10px 0; }
 
+/* ========== PROFIL-BILD ========== */
+.profile-pic {
+  display: block;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 30px;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 4px solid var(--primary-color);
+  box-shadow: 0 10px 40px rgba(255, 107, 53, 0.3);
+  animation: fadeInScale 0.8s ease-out;
+  transition: var(--transition);
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 50px rgba(255, 107, 53, 0.5);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========== STECKBRIEF / DEFINITION LIST ========== */
+.steckbrief {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 15px 20px;
+}
+
+.steckbrief dt {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-top: 8px;
+  transition: var(--transition);
+}
+
+.steckbrief dt:hover {
+  color: var(--secondary-color);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+}
+
+.steckbrief dd {
+  color: var(--text-light);
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  word-break: break-word;
+}
+
+.steckbrief dd:empty::before {
+  content: "—";
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ========== TABELLEN ========== */
+table {
+  border-collapse: collapse;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+th {
+  background: rgba(255, 107, 53, 0.2);
+  color: var(--primary-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+td {
+  color: var(--text-light);
+}
+
+tbody tr:hover {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ========== ÜBERSCHRIFTEN ========== */
+h1 {
+  font-size: 36px;
+  margin: 30px 0 15px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 28px;
+  margin: 25px 0 12px;
+  color: var(--text-light);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 8px;
+}
+
+h3 {
+  font-size: 22px;
+  margin: 20px 0 10px;
+  color: var(--secondary-color);
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
-
-  h1 { font-size: 20px; }
-  h2 { font-size: 18px; }
-  h3 { font-size: 16px; }
   body {
-  font-size: 12px;
-  }
-  th, td {
-    padding: 6px;
+    font-size: 14px;
   }
 
-  
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  main {
+    padding: 15px;
+  }
+
+  .steckbrief {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .steckbrief dt {
+    padding-top: 5px;
+    margin-top: 0;
+  }
+
+  .steckbrief dd {
+    margin-bottom: 15px;
+  }
+
+  nav {
+    padding: 10px 15px;
+  }
 
   nav a {
     font-size: 13px;
-  }
- .dropdown:hover .dropdown-content {
-    display: block;
+    margin: 6px 10px 6px 0;
   }
 
+  .profile-pic {
+    width: 160px;
+    height: 160px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th, td {
+    padding: 8px 6px;
+  }
+
+  .dropdown-content {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  main {
+    padding: 10px;
+  }
+
+  .steckbrief {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  nav a {
+    font-size: 12px;
+    margin: 5px 8px;
+  }
+
+  .profile-pic {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 6px 4px;
+  }
+}
+
+/* ========== SCROLL-VERHALTEN ========== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ========== FOKUS-ZUSTÄNDE (ACCESSIBILITY) ========== */
+a:focus,
+button:focus,
+input:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* ========== SCROLLBAR (OPTIONAL) ========== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
 }
