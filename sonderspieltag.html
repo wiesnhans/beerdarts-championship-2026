@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beerdarts Championship – Sonderspieltag</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+</head>
+<body>
+
+<div id="nav"></div>
+
+<main>
+  <h1>Sonderspieltag</h1>
+  <p>@Kriemhilden Palace</p>
+  <p>02.04.2026</p>
+
+  <h3>Vorrunde – Jeder gegen jeden 2× (Best of 4 Legs)</h3>
+  <table id="vorrundeSpiele">
+    <thead>
+      <tr>
+        <th>Spieler 1</th><th></th><th>:</th><th></th><th>Spieler 2</th>
+      </tr>
+    </thead>
+    <tbody id="vorrundeSpieleBody"></tbody>
+  </table>
+
+  <h2>Vorrunde – Tabelle</h2>
+  <table id="spielerTabelle">
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>U</th><th>N</th>
+        <th>L+</th><th>L-</th><th>P</th><th>AVG</th>
+      </tr>
+    </thead>
+    <tbody id="spielerTabelleBody"></tbody>
+  </table>
+
+  <h2>Finalrunde</h2>
+  <p>Platz 1 ist gesetzt · Platz 2 vs. Platz 3 → Halbfinale → Finale (Best of 5)</p>
+  <table id="finalTabelle">
+    <thead>
+      <tr>
+        <th></th><th>Spieler 1</th><th></th><th>:</th><th></th><th>Spieler 2</th>
+      </tr>
+    </thead>
+    <tbody id="finalBody"></tbody>
+  </table>
+
+  <h2>Abschlusstabelle</h2>
+  <table id="abschlussTabelle">
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
+        <th>L+</th><th>L-</th><th>AVG</th>
+        <th>D V</th><th>D Q</th><th>HC</th><th>HS</th>
+      </tr>
+    </thead>
+    <tbody id="abschlussBody"></tbody>
+  </table>
+
+  <script src="sonderspieltag.js" type="module"></script>
+
+</main>
+
+<script type="module">
+import { initDropdown } from './dropdown.js';
+
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("nav").innerHTML = html;
+    initDropdown();
+  });
+</script>
+
+</body>
+</html>
