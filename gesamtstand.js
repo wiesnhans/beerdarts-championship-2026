@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { ladeSpieltagDaten } from './spieltag1.js';
+import { ladeSpieltagDaten as ladeSpieltagDaten2 } from './spieltag2.js';
 // Für weitere Spieltage einfach ergänzen:
 // import { ladeSpieltagDaten as ladeSpieltagDaten2 } from './spieltag2.js';
 
@@ -12,7 +13,7 @@ async function berechneGesamtstand() {
   // ── Alle Spieltage laden (await, da async)
   const alleSpieltage = await Promise.all([
     ladeSpieltagDaten(),
-    // ladeSpieltagDaten2(),  // <-- Spieltag 2 hier einkommentieren wenn fertig
+    ladeSpieltagDaten2(),  // <-- Spieltag 2 hier einkommentieren wenn fertig
   ]);
 
   // ── Daten zusammenführen
