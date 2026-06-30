@@ -2,12 +2,12 @@
 // doppelspieltag1.js – lädt Doppelspiele aus DB
 // ─────────────────────────────────────────────────────────────
 
-const DB_URL = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/2026-01-16.db";
+const DB_URL = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/2026-06-30.db";
 
-const SPIELTAG_NR = 1;
+const SPIELTAG_NR = 2;
 
 const SPIELTAG_DATUM = {
-  1: "2026-01-09",
+  2: "2026-06-30",
 };
 
 // Doppelspieler starten ab dieser ID
@@ -19,7 +19,7 @@ const SQL_READY = initSqlJs({
 });
 
 // ── Hauptfunktion
-export async function ladeDoppelSpieltag1() {
+export async function ladeDoppelSpieltag2() {
 
   const [SQL, dbBuffer] = await Promise.all([
     SQL_READY,
@@ -99,7 +99,7 @@ export async function ladeDoppelSpieltag1() {
   });
 
   // ── Tabelle füllen (nur wenn Seite vorhanden)
-  const table = document.getElementById("doppelSpieleBody");
+  const table = document.getElementById("doppelSpieleBody2");
 
   if (table) {
     table.innerHTML = "";
@@ -142,7 +142,7 @@ export async function ladeDoppelSpieltag1() {
 
 // ── Auto-Start (nur für diese Seite)
 if (document.getElementById("doppelSpieleBody")) {
-  ladeDoppelSpieltag1().catch(err => {
+  ladeDoppelSpieltag2().catch(err => {
     console.error("Fehler Doppel:", err);
 
     document.body.insertAdjacentHTML("afterbegin", `
