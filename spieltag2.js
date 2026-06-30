@@ -2,6 +2,8 @@
 // spieltag1.js – ES-Modul, Spieltag 1 (2026)
 // ─────────────────────────────────────────────────────────────
 
+import { getMasterPlayerId } from "./playermatcher.js";
+
 const DB_URL = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/2026-06-30.db";
 const SPIELTAG_NR = 2;
 
@@ -11,7 +13,7 @@ const PUNKTE_HIGHSCORE = 2;
 const PUNKTE_HIGHCO   = 2;
 
 const SPIELTAG_DATUM = {
-  2: "2026-06-30",
+  2: "2026-01-09",
 };
 
 
@@ -122,6 +124,12 @@ const gameRows = q(`
   // ── Nach GameId gruppieren
   const gamesById = {};
   gameRows.forEach(g => {
+
+// ✅ NEU: Name mappen
+  const mapped = getMasterPlayerId(g.name);
+  g.name = mapped || g.name;
+
+
     if (!gamesById[g.gameId]) gamesById[g.gameId] = { p1: null, p2: null, winner: null, bestOfLegs: g.bestOfLegs };
     const game = gamesById[g.gameId];
     if (!game.p1) game.p1 = g; else game.p2 = g;
