@@ -13,7 +13,7 @@ const PUNKTE_HIGHSCORE = 2;
 const PUNKTE_HIGHCO   = 2;
 
 const SPIELTAG_DATUM = {
-  2: "2026-01-09",
+  2: "2026-06-30",
 };
 
 
