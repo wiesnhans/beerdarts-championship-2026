@@ -5,6 +5,7 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beerdarts Championship – Spieltag 3</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
 </head>
 <body>
 
@@ -18,47 +19,60 @@ fetch("nav.html")
 
 <main>
   <h1>Spieltag 3</h1>
-    <p>@LowCeiling Village</p>
-    <p>xx.0x.2026</p>
+    <p>@Agip Tavern</p>
+    <p>30.10.2026</p>
 
-    <h3>Vorrunde Best of 3 Legs</h3>
- 
+ <h3>Vorrunde Best of 3 Legs</h3>
+  <table id="vorrundeSpiele">
+    <thead>
+      <tr>
+        <th>Spieler 1</th><th></th><th>:</th><th></th><th>Spieler 2</th>
+      </tr>
+    </thead>
+    <tbody id="vorrundeSpieleBody"></tbody>
+  </table>
 
-<table id="vorrundeSpiele">
-  <colgroup>
-    <col style="width:44%"> <!-- Spieler 1 -->
-    
-    <col style="width:5%">  <!-- Legs1 -->
-    <col style="width:2%">  <!-- : -->
-    <col style="width:5%">  <!-- Legs2 -->
-    
-    <col style="width:44%"> <!-- Spieler 2 -->
-  </colgroup>
-  <tr>
-    <th>Spieler 1</th><th>Legs</th><th>:</th><th>Legs</th><th>Spieler 2</th>
-  </tr>
-</table>
+  <h2>Vorrunde – Tabelle</h2>
+  <table id="spielerTabelle">
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
+        <th>L+</th><th>L-</th><th>P</th><th>AVG</th>
+      </tr>
+    </thead>
+    <tbody id="spielerTabelleBody"></tbody>
+  </table>
 
+  <h2>Finalrunde (Top 4)</h2>
+  <h3>Halbfinale</h3>
+  <table id="finalBracket">
+    <thead>
+      <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    </thead>
+    <tbody id="finalBracketBody"></tbody>
+  </table>
 
+  <h3>Finals</h3>
+  <table id="final2">
+    <thead>
+      <tr><th></th><th>Spieler 1</th><th></th><th></th><th></th><th>Spieler 2</th></tr>
+    </thead>
+    <tbody id="final2Body"></tbody>
+  </table>
 
+  <h2>Tabelle Spieltag 2</h2>
+  <table id="spieltag1Tabelle">
+    <thead>
+      <tr>
+        <th>Pl</th><th>Spieler</th><th>Sp</th><th>S</th><th>N</th>
+        <th>L+</th><th>Ls-</th><th>P</th><th>AVG</th>
+        <th>D V</th><th>D Q</th><th>HC</th><th>HS</th>
+      </tr>
+    </thead>
+    <tbody id="gesamtstandBody"></tbody>
+  </table>
 
-
-<h2>Vorrunde – Tabelle</h2>
-<table id="spielerTabelle">
-  <tr>
-    <th>Platz</th>
-    <th>Spieler</th>
-    <th>Spiele</th>
-    <th>Siege</th>
-    <th>Niederlagen</th>
-    <th>Legs+</th>
-    <th>Legs-</th>
-    <th>Punkte</th>
-    <th>AVG</th>
-  </tr>
-</table>
-
-
+<script src="spieltag3.js" type="module"></script>
 
 </main>
 
