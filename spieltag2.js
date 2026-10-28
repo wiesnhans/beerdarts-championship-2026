@@ -179,8 +179,61 @@ Object.values(gamesById).forEach(g => {
     s.avg = s.totalDarts > 0 ? (s.totalScore * 3 / s.totalDarts).toFixed(2) : "0.00";
   });
 
-  const vorrundeArray = Object.values(vorrundeStats).sort((a, b) => b.vorpunkte - a.vorpunkte);
-  vorrundeArray.forEach((p, i) => { p.punkte = PUNKTE_VORRUNDE[i] || 0; });
+function getDirekterVergleich(nameA, nameB, games) {
+  for (const g of games) {
+    const names = [g.p1.name, g.p2.name];
+
+    if (names.includes(nameA) && names.includes(nameB)) {
+      if (g.winner?.name === nameA) return -1; // A vor B
+      if (g.winner?.name === nameB) return 1;  // B vor A
+    }
+  }
+  return 0;
+}
+console.table(
+  Object.values(vorrundeStats).map(p => ({
+    name: p.name,
+    vorpunkte: p.vorpunkte,
+    legsPlus: p.legsPlus,
+    legsMinus: p.legsMinus,
+    diff: p.legsPlus - p.legsMinus
+  }))
+);
+
+
+ const vorrundeArray = Object.values(vorrundeStats).sort((a, b) => {
+  // 1. Punkte
+  if (b.vorpunkte !== a.vorpunkte) {
+    return b.vorpunkte - a.vorpunkte;
+  }
+
+  // 2. Legdifferenz
+  const diffA = a.legsPlus - a.legsMinus;
+  const diffB = b.legsPlus - b.legsMinus;
+  if (diffB !== diffA) {
+    return diffB - diffA;
+  }
+
+  // 3. Direkter Vergleich
+  const direct = getDirekterVergleich(a.name, b.name, vorrundeGames);
+  if (direct !== 0) return direct;
+
+  // 4. Fallback (optional: Avg)
+  return parseFloat(b.avg) - parseFloat(a.avg);
+});
+
+console.table(
+  vorrundeArray.map(p => ({
+    name: p.name,
+    vorpunkte: p.vorpunkte,
+    diff: p.legsPlus - p.legsMinus
+  }))
+);
+
+
+vorrundeArray.forEach((spieler, platz) => {
+  spieler.punkte = PUNKTE_VORRUNDE[platz] || 0;
+});
 
   // ── Gesamtstats
   const stats = {};

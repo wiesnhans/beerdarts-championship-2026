@@ -5,7 +5,7 @@
 import { getMasterPlayerId } from "./playermatcher.js";
 
 const DB_URL = "https://raw.githubusercontent.com/wiesnhans/beerdarts-championship-2026/refs/heads/main/2026-10-30.db";
-const SPIELTAG_NR = 2;
+const SPIELTAG_NR = 3;
 
 const PUNKTE_VORRUNDE = [5, 2, 0, 0];
 const PUNKTE_FINAL    = [10, 6, 3, 1];
@@ -13,7 +13,7 @@ const PUNKTE_HIGHSCORE = 2;
 const PUNKTE_HIGHCO   = 2;
 
 const SPIELTAG_DATUM = {
-  2: "2026-10-30",
+  3: "2026-10-30",
 };
 
 
@@ -30,6 +30,7 @@ const SQL_READY = initSqlJs({
 
 // ── Hauptfunktion – gibt spielerArray zurück (Promise)
 export async function ladeSpieltagDaten() {
+  
   const [SQL, dbBuffer] = await Promise.all([
     SQL_READY,
     fetch(DB_URL).then(r => {
@@ -39,6 +40,7 @@ export async function ladeSpieltagDaten() {
   ]);
 
   const db = new SQL.Database(new Uint8Array(dbBuffer));
+ 
   function q(sql) {
     const stmt = db.prepare(sql);
     const rows = [];
@@ -121,6 +123,8 @@ const gameRows = q(`
   ORDER BY m.created_at, ms.xGameMpId, gs.spielerId
 `);
 
+
+
   // ── Nach GameId gruppieren
   const gamesById = {};
   gameRows.forEach(g => {
@@ -190,9 +194,6 @@ function getDirekterVergleich(nameA, nameB, games) {
   }
   return 0;
 }
-
-
-
  const vorrundeArray = Object.values(vorrundeStats).sort((a, b) => {
   // 1. Punkte
   if (b.vorpunkte !== a.vorpunkte) {
@@ -212,6 +213,10 @@ function getDirekterVergleich(nameA, nameB, games) {
 
   // 4. Fallback (optional: Avg)
   return parseFloat(b.avg) - parseFloat(a.avg);
+});
+
+vorrundeArray.forEach((spieler, platz) => {
+  spieler.punkte = PUNKTE_VORRUNDE[platz] || 0;
 });
 
   // ── Gesamtstats
@@ -239,7 +244,7 @@ function getDirekterVergleich(nameA, nameB, games) {
       if (isVorrunde && vorrundeStats[p.name]) {
         const maxVP = Math.max(...vorrundeArray.map(x => x.punkte));
         s.punkte       = vorrundeStats[p.name].punkte || 0;
-        s.vorrundenSieg = vorrundeStats[p.name].punkte === maxVP ? 1 : 0;
+        s.vorrundenSieg = vorrundeStats[p.name].vorpunkte === maxVP ? 1 : 0;
       }
     });
   };
@@ -403,6 +408,8 @@ function getDirekterVergleich(nameA, nameB, games) {
     gesamtSieger:    p.gesamtSieg
   }));
 }
+
+
 
 // ── Automatisch starten wenn direkt als Seite geladen
 // (wird von gesamtstand.js per import+await selbst aufgerufen,

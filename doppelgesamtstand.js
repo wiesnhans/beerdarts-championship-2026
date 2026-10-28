@@ -4,6 +4,9 @@
 
 import { ladeDoppelSpieltag1 } from "./doppelspieltag1.js";
 import { ladeDoppelSpieltag2 } from "./doppelspieltag2.js";
+import { ladeDoppelSpieltag3 } from "./doppelspieltag3.js";
+import { getMasterPlayerId } from "./playermatcher.js";
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -13,12 +16,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     const alleSpieltage = await Promise.all([
       ladeDoppelSpieltag1(),
       ladeDoppelSpieltag2(),
+      ladeDoppelSpieltag3(),
     ]);
 
     console.log("Spieltage geladen:", alleSpieltage);
 
     const alleGames = alleSpieltage.flat();
-    console.log("Gesamt Games:", alleGames.length);
+ 
+    console.log("Anzahl Spieltage:", alleSpieltage.map(s => s.length));
+console.log("Anzahl Gesamtspiele:", alleGames.length);
+console.log("Erstes Spiel:", alleGames[0]);
 
     const stats = {};
 
@@ -28,22 +35,31 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       [g.p1, g.p2].forEach(p => {
 
-        if (!stats[p.spielerId]) {
-          stats[p.spielerId] = {
-            id: p.spielerId,
-            name: p.name,
-            spiele: 0,
-            siege: 0,
-            niederlagen: 0,
-            legsPlus: 0,
-            legsMinus: 0,
-            totalScore: 0,
-            totalDarts: 0,
-            avg: 0
-          };
-        }
+       const masterName = getMasterPlayerId(p.name) || p.name;
+       console.log(
+  "Original:",
+  p.name,
+  "=> Master:",
+  masterName
+);
 
-        const s = stats[p.spielerId];
+if (!stats[masterName]) {
+  stats[masterName] = {
+    name: masterName,
+    spiele: 0,
+    siege: 0,
+    niederlagen: 0,
+    legsPlus: 0,
+    legsMinus: 0,
+    totalScore: 0,
+    totalDarts: 0,
+    avg: 0
+  };
+}
+
+const s = stats[masterName];
+
+
 
         s.spiele++;
 
@@ -112,8 +128,10 @@ window.addEventListener("DOMContentLoaded", async () => {
         table.appendChild(tr);
       });
 
+
   } catch (err) {
     console.error("Fehler Doppel Gesamtstand:", err);
+    
 
     document.body.insertAdjacentHTML("afterbegin", `
       <div style="background:#e84a4a;color:#fff;padding:12px">
