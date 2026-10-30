@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beerdarts Championship – Spieltag 1</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+</head>
+<body>
+
+<div id="nav"></div>
+
+<script>
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => document.getElementById("nav").innerHTML = html);
+</script>
+
+<main>
+  
+<main>
+  <h1>Premier League Darts 2023</h1>
+  <p>Archiv – alle vorhandenen Spieltage</p>
+
+  <div id="status">Archivdaten werden geladen …</div>
+  <div id="archiv"></div>
+</main>
+
+<script src="Premier League.js" type="module"></script>
+
+</main>
+
+<script type="module">
+import { initDropdown } from './dropdown.js';
+
+fetch("nav.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("nav").innerHTML = html;
+    initDropdown(); // erst nach fetch ausführen
+  });
+</script>
+
+</body>
+</html>
