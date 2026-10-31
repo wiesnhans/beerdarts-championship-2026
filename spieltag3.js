@@ -215,6 +215,8 @@ function getDirekterVergleich(nameA, nameB, games) {
   return parseFloat(b.avg) - parseFloat(a.avg);
 });
 
+const vorrundenSiegerName = vorrundeArray[0]?.name;
+
 vorrundeArray.forEach((spieler, platz) => {
   spieler.punkte = PUNKTE_VORRUNDE[platz] || 0;
 });
@@ -241,11 +243,10 @@ vorrundeArray.forEach((spieler, platz) => {
       s.doppelSum  += p.doppelVersuche || 0;
       s.checkoutMax  = Math.max(s.checkoutMax,  p.highestcheckout || 0);
       s.highscoreMax = Math.max(s.highscoreMax, p.highscore       || 0);
-      if (isVorrunde && vorrundeStats[p.name]) {
-        const maxVP = Math.max(...vorrundeArray.map(x => x.punkte));
-        s.punkte       = vorrundeStats[p.name].punkte || 0;
-        s.vorrundenSieg = vorrundeStats[p.name].vorpunkte === maxVP ? 1 : 0;
-      }
+     if (isVorrunde && vorrundeStats[p.name]) {
+  s.punkte = vorrundeStats[p.name].punkte || 0;
+  s.vorrundenSieg = (p.name === vorrundenSiegerName) ? 1 : 0;
+}
     });
   };
 
